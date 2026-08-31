@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useOrdersStore } from '../store/useOrdersStore';
@@ -24,16 +24,20 @@ import {
   QrCode, 
   RefreshCw,
   X,
-  ArrowRight
+  ArrowRight,
+  Camera,
+  Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Account = () => {
   const navigate = useNavigate();
+  const fileInputRef = React.useRef(null);
   const { 
     user, 
     isAuthenticated, 
     logout, 
+    updateAvatar,
     sessions, 
     revokeSession, 
     revokeAllSessions,
@@ -136,6 +140,29 @@ export const Account = () => {
     }
   };
 
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        addToast('Please select an image smaller than 5MB', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        updateAvatar(reader.result);
+        addToast('Profile picture updated successfully!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.substring(0, 2).toUpperCase();
+  };
+
   const handleLogout = () => {
     logout();
     addToast('Signed out of AuraStore successfully', 'info');
@@ -149,11 +176,40 @@ export const Account = () => {
         {/* Profile Banner */}
         <div className="p-6 sm:p-10 rounded-[32px] bg-gradient-to-br from-neutral-900 via-neutral-900/90 to-purple-950/30 border border-purple-500/20 shadow-2xl mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="w-18 h-18 rounded-2xl object-cover ring-2 ring-purple-500/40 shrink-0"
-            />
+            
+            {/* Interactive Avatar Upload Container */}
+            <div className="relative group shrink-0">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarUpload}
+                accept="image/*"
+                className="hidden"
+              />
+
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-purple-500/40 shadow-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-600 flex items-center justify-center text-white font-heading font-extrabold text-2xl ring-2 ring-purple-500/40 shadow-lg tracking-wider">
+                  {getInitials(user.name)}
+                </div>
+              )}
+
+              {/* Upload Overlay Button */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 rounded-2xl bg-neutral-950/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-all cursor-pointer"
+                title="Upload custom photo"
+              >
+                <Camera size={20} className="text-purple-300 mb-0.5" />
+                <span className="text-[9px] font-bold">Upload</span>
+              </button>
+            </div>
+
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">{user.name}</h1>
@@ -167,8 +223,29 @@ export const Account = () => {
                 )}
               </div>
               <p className="text-xs text-neutral-400 mt-1">
-                Member since {user.joinedDate} � {user.email}
+                Member since {user.joinedDate} • {user.email}
               </p>
+              
+              {/* Photo action links */}
+              <div className="flex items-center gap-3 mt-2 text-[11px]">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1"
+                >
+                  <Upload size={12} /> {user.avatar ? 'Change Photo' : 'Upload Profile Photo'}
+                </button>
+                {user.avatar && (
+                  <button
+                    onClick={() => {
+                      updateAvatar(null);
+                      addToast('Reset to initials badge', 'info');
+                    }}
+                    className="text-neutral-500 hover:text-rose-400 font-medium"
+                  >
+                    Remove Photo
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

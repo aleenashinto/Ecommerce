@@ -378,8 +378,8 @@ export const Header = () => {
                 {user.avatar ? (
                   <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-bold text-xs flex items-center justify-center">
-                    {user.name?.charAt(0) || 'U'}
+                  <div className="w-full h-full bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-bold text-[10px] flex items-center justify-center tracking-tight">
+                    {user.name ? (user.name.split(' ').length > 1 ? `${user.name.split(' ')[0][0]}${user.name.split(' ')[1][0]}`.toUpperCase() : user.name.substring(0, 2).toUpperCase()) : 'U'}
                   </div>
                 )}
               </button>

@@ -193,7 +193,7 @@ export const useAuthStore = create((set, get) => ({
       name: formData.name,
       email: formData.email.trim().toLowerCase(),
       phone: formData.phone || '+1 (555) 000-0000',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      avatar: null, // Default to null so user can upload their custom photo or see their Initials badge
       tier: 'Silver Member',
       points: 250,
       emailVerified: false,
@@ -208,6 +208,15 @@ export const useAuthStore = create((set, get) => ({
 
     set({ user: newUser, isAuthenticated: true, mockPassword: formData.password });
     return { success: true, user: newUser };
+  },
+
+  // Update Profile Avatar
+  updateAvatar: (avatarUrl) => {
+    const current = get().user;
+    if (!current) return;
+    const updated = { ...current, avatar: avatarUrl };
+    localStorage.setItem('aurastore_user', JSON.stringify(updated));
+    set({ user: updated });
   },
 
   // Logout
