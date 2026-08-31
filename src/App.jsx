@@ -30,6 +30,8 @@ const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.N
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts').then(m => ({ default: m.AdminProducts })));
+const AdminModeration = lazy(() => import('./pages/admin/AdminModeration').then(m => ({ default: m.AdminModeration })));
+const AdminSellers = lazy(() => import('./pages/admin/AdminSellers').then(m => ({ default: m.AdminSellers })));
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders').then(m => ({ default: m.AdminOrders })));
 const AdminInventory = lazy(() => import('./pages/admin/AdminInventory').then(m => ({ default: m.AdminInventory })));
 const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers').then(m => ({ default: m.AdminCustomers })));
@@ -42,6 +44,7 @@ const SellerDashboard = lazy(() => import('./pages/seller/SellerDashboard').then
 const SellerProducts = lazy(() => import('./pages/seller/SellerProducts').then(m => ({ default: m.SellerProducts })));
 const SellerOrders = lazy(() => import('./pages/seller/SellerOrders').then(m => ({ default: m.SellerOrders })));
 const SellerWallet = lazy(() => import('./pages/seller/SellerWallet').then(m => ({ default: m.SellerWallet })));
+const SellerRegister = lazy(() => import('./pages/seller/SellerRegister').then(m => ({ default: m.SellerRegister })));
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -90,6 +93,8 @@ export function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="moderation" element={<AdminModeration />} />
+          <Route path="sellers" element={<AdminSellers />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="inventory" element={<AdminInventory />} />
           <Route path="customers" element={<AdminCustomers />} />
@@ -98,6 +103,7 @@ export function App() {
         </Route>
 
         {/* SELLER / VENDOR PORTAL */}
+        <Route path="/seller/register" element={<SellerRegister />} />
         <Route path="/seller" element={<SellerLayout />}>
           <Route index element={<SellerDashboard />} />
           <Route path="products" element={<SellerProducts />} />

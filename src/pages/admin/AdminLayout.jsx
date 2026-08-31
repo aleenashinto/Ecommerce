@@ -14,16 +14,22 @@ import {
   Sparkles, 
   Search,
   Menu,
-  X
+  X,
+  Store,
+  CheckSquare
 } from 'lucide-react';
 
 export const AdminLayout = () => {
-  const { currentRole, setRole } = useAdminStore();
+  const { currentRole, setRole, pendingProducts, sellers } = useAdminStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const pendingSellersCount = sellers.filter(s => s.kycStatus === 'Pending Verification').length;
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, end: true },
     { name: 'Products & Catalog', path: '/admin/products', icon: Package },
+    { name: 'Moderation Queue', path: '/admin/moderation', icon: CheckSquare, badge: pendingProducts.length > 0 ? pendingProducts.length : null },
+    { name: 'Seller Management', path: '/admin/sellers', icon: Store, badge: pendingSellersCount > 0 ? pendingSellersCount : null },
     { name: 'Order Processing', path: '/admin/orders', icon: ShoppingBag },
     { name: 'Warehouses & Stock', path: '/admin/inventory', icon: Warehouse },
     { name: 'Customer CRM', path: '/admin/customers', icon: Users },
@@ -31,7 +37,14 @@ export const AdminLayout = () => {
     { name: 'Business Analytics', path: '/admin/analytics', icon: TrendingUp }
   ];
 
-  const roles = ['Super Admin', 'Inventory Manager', 'Marketing Manager', 'Support Agent'];
+  const roles = [
+    'Super Admin', 
+    'Product Admin', 
+    'Order Admin', 
+    'Finance Admin', 
+    'Support Admin', 
+    'Seller Manager'
+  ];
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex">
@@ -81,14 +94,21 @@ export const AdminLayout = () => {
                 to={item.path}
                 end={item.end}
                 onClick={() => setIsSidebarOpen(false)}
-                className={({ isActive }) => `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
+                className={({ isActive }) => `flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
                   isActive
                     ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/40'
                     : 'text-neutral-400 hover:text-white hover:bg-neutral-800/60'
                 }`}
               >
-                <item.icon size={16} />
-                <span>{item.name}</span>
+                <div className="flex items-center gap-3">
+                  <item.icon size={16} />
+                  <span>{item.name}</span>
+                </div>
+                {item.badge && (
+                  <span className="w-5 h-5 rounded-full bg-pink-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>
