@@ -120,6 +120,14 @@ export const Shop = () => {
 
           {/* View Mode & Sort Controls */}
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="lg:hidden h-10 px-3.5 rounded-xl bg-neutral-900 border border-neutral-800 text-xs font-semibold text-white flex items-center gap-1.5"
+            >
+              <SlidersHorizontal size={14} className="text-purple-400" />
+              <span>Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}</span>
+            </button>
+
             <div className="flex rounded-xl bg-neutral-900 border border-neutral-800 p-1">
               <button
                 onClick={() => setViewMode('grid')}
@@ -145,7 +153,7 @@ export const Shop = () => {
               <option value="recommended">Featured / Recommended</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated (?)</option>
+              <option value="rating">Highest Rated (★)</option>
               <option value="newest">Newest Drops</option>
               <option value="popular">Most Popular</option>
             </select>
@@ -160,13 +168,17 @@ export const Shop = () => {
               categories={categories}
               selectedCategory={selectedCategory}
               onSelectCategory={(cat) => { setSelectedCategory(cat); setCurrentPage(1); }}
+              selectedPriceRange={selectedPriceRange}
+              onSelectPriceRange={(range) => { setSelectedPriceRange(range); setCurrentPage(1); }}
               priceRange={selectedPriceRange}
               onPriceChange={(range) => { setSelectedPriceRange(range); setCurrentPage(1); }}
               selectedRating={selectedRating}
               onSelectRating={(r) => { setSelectedRating(r); setCurrentPage(1); }}
               inStockOnly={inStockOnly}
               onToggleInStock={(v) => { setInStockOnly(v); setCurrentPage(1); }}
+              onClearAll={resetFilters}
               onResetFilters={resetFilters}
+              activeFiltersCount={activeFiltersCount}
             />
           </div>
 
@@ -295,6 +307,42 @@ export const Shop = () => {
         </div>
 
       </div>
+
+      {/* Mobile Filter Slide-Over Drawer */}
+      {isMobileFilterOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-neutral-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="w-full sm:max-w-md max-h-[85vh] overflow-y-auto bg-neutral-900 border border-purple-500/30 rounded-t-[32px] sm:rounded-[32px] p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+              <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider">Refine Catalog</h3>
+              <button onClick={() => setIsMobileFilterOpen(false)} className="p-1 rounded-full text-neutral-400 hover:text-white">
+                <X size={18} />
+              </button>
+            </div>
+
+            <FilterSidebar
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={(cat) => { setSelectedCategory(cat); setCurrentPage(1); }}
+              selectedPriceRange={selectedPriceRange}
+              onSelectPriceRange={(range) => { setSelectedPriceRange(range); setCurrentPage(1); }}
+              selectedRating={selectedRating}
+              onSelectRating={(r) => { setSelectedRating(r); setCurrentPage(1); }}
+              inStockOnly={inStockOnly}
+              onToggleInStock={(v) => { setInStockOnly(v); setCurrentPage(1); }}
+              onClearAll={resetFilters}
+              activeFiltersCount={activeFiltersCount}
+            />
+
+            <button
+              onClick={() => setIsMobileFilterOpen(false)}
+              className="w-full py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg"
+            >
+              Apply Filters ({filteredProducts.length} Results)
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

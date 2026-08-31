@@ -3,29 +3,36 @@ import { RotateCcw, Filter, Star, Check } from 'lucide-react';
 
 export const FilterSidebar = ({
   categories = [],
-  selectedCategory,
-  onSelectCategory,
+  selectedCategory = 'all',
+  onSelectCategory = () => {},
   selectedPriceRange,
+  priceRange,
   onSelectPriceRange,
-  selectedRating,
-  onSelectRating,
-  inStockOnly,
-  onToggleInStock,
+  onPriceChange,
+  selectedRating = 0,
+  onSelectRating = () => {},
+  inStockOnly = false,
+  onToggleInStock = () => {},
   onClearAll,
+  onResetFilters,
   activeFiltersCount = 0
 }) => {
+  const currentPriceRange = selectedPriceRange || priceRange || { min: 0, max: 99999 };
+  const handlePriceSelect = onSelectPriceRange || onPriceChange || (() => {});
+  const handleClear = onClearAll || onResetFilters || (() => {});
+
   const priceRanges = [
     { label: 'All Prices', min: 0, max: 99999 },
     { label: 'Under $100', min: 0, max: 100 },
-    { label: '$100 � $250', min: 100, max: 250 },
-    { label: '$250 � $500', min: 250, max: 500 },
+    { label: '$100 – $250', min: 100, max: 250 },
+    { label: '$250 – $500', min: 250, max: 500 },
     { label: '$500+', min: 500, max: 99999 }
   ];
 
   const ratingOptions = [
-    { label: '4.8? & above', value: 4.8 },
-    { label: '4.5? & above', value: 4.5 },
-    { label: '4.0? & above', value: 4.0 }
+    { label: '4.8★ & above', value: 4.8 },
+    { label: '4.5★ & above', value: 4.5 },
+    { label: '4.0★ & above', value: 4.0 }
   ];
 
   return (
@@ -39,7 +46,7 @@ export const FilterSidebar = ({
         </div>
         {activeFiltersCount > 0 && (
           <button
-            onClick={onClearAll}
+            onClick={handleClear}
             className="text-xs text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1"
           >
             <RotateCcw size={12} /> Clear All
@@ -85,11 +92,11 @@ export const FilterSidebar = ({
         </h4>
         <div className="flex flex-col gap-1.5">
           {priceRanges.map((range, index) => {
-            const isSelected = selectedPriceRange.min === range.min && selectedPriceRange.max === range.max;
+            const isSelected = currentPriceRange.min === range.min && currentPriceRange.max === range.max;
             return (
               <button
                 key={index}
-                onClick={() => onSelectPriceRange(range)}
+                onClick={() => handlePriceSelect(range)}
                 className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors text-left ${
                   isSelected
                     ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
