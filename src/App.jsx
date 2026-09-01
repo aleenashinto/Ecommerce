@@ -24,6 +24,8 @@ const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Sup
 const Blog = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
 const BlogPost = lazy(() => import('./pages/BlogPost').then(m => ({ default: m.BlogPost })));
 const Rewards = lazy(() => import('./pages/Rewards').then(m => ({ default: m.Rewards })));
+const GiftCards = lazy(() => import('./pages/GiftCards').then(m => ({ default: m.GiftCards })));
+const Referral = lazy(() => import('./pages/Referral').then(m => ({ default: m.Referral })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Admin Control Center Pages
@@ -37,6 +39,7 @@ const AdminInventory = lazy(() => import('./pages/admin/AdminInventory').then(m 
 const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers').then(m => ({ default: m.AdminCustomers })));
 const AdminCoupons = lazy(() => import('./pages/admin/AdminCoupons').then(m => ({ default: m.AdminCoupons })));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
+const AdminAuditLogs = lazy(() => import('./pages/admin/AdminAuditLogs').then(m => ({ default: m.AdminAuditLogs })));
 
 // Seller / Vendor Portal Pages
 const SellerLayout = lazy(() => import('./pages/seller/SellerLayout').then(m => ({ default: m.SellerLayout })));
@@ -80,6 +83,8 @@ export function App() {
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:id" element={<BlogPost />} />
           <Route path="rewards" element={<Rewards />} />
+          <Route path="gift-cards" element={<GiftCards />} />
+          <Route path="referral" element={<Referral />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
@@ -100,6 +105,7 @@ export function App() {
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="audit-logs" element={<AdminAuditLogs />} />
         </Route>
 
         {/* SELLER / VENDOR PORTAL */}

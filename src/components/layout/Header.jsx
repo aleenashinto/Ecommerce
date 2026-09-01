@@ -16,7 +16,11 @@ import {
   Settings,
   LogOut,
   Bell,
-  CheckCircle
+  CheckCircle,
+  Mic,
+  Camera,
+  Gift,
+  Users
 } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useWishlistStore } from '../../store/useWishlistStore';
@@ -26,6 +30,7 @@ import { useCurrencyStore, CURRENCY_RATES } from '../../store/useCurrencyStore';
 import { useCompareStore } from '../../store/useCompareStore';
 import { products } from '../../data/products';
 import { useDebounce } from '../../hooks/useDebounce';
+import { VoiceImageSearchModal } from '../search/VoiceImageSearchModal';
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,6 +39,8 @@ export const Header = () => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isVoiceSearchOpen, setIsVoiceSearchOpen] = useState(false);
+  const [voiceSearchMode, setVoiceSearchMode] = useState('voice');
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'Order Dispatched', desc: 'TRK-AUR-9842109X is out for priority delivery.', time: '10m ago', unread: true },
     { id: 2, title: 'Price Drop Alert', desc: 'Chronos Horizon is now $499 (Save $50)', time: '2h ago', unread: true },
@@ -112,9 +119,11 @@ export const Header = () => {
 
   const navLinks = [
     { name: 'Shop', path: '/shop' },
+    { name: 'Gift Cards', path: '/gift-cards' },
+    { name: 'Referral', path: '/referral' },
     { name: 'Journal', path: '/blog' },
     { name: 'Rewards', path: '/rewards' },
-    { name: 'Support Desk', path: '/support' },
+    { name: 'Support', path: '/support' },
   ];
 
   return (
@@ -140,7 +149,7 @@ export const Header = () => {
         </Link>
 
         {/* DESKTOP NAVIGATION */}
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
@@ -176,9 +185,34 @@ export const Header = () => {
                 setIsSearchOpen(true);
               }}
               onFocus={() => setIsSearchOpen(true)}
-              className="w-full h-10 pl-9 pr-4 text-xs rounded-full bg-neutral-900/90 border border-neutral-800 focus:border-purple-500/50 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+              className="w-full h-10 pl-9 pr-16 text-xs rounded-full bg-neutral-900/90 border border-neutral-800 focus:border-purple-500/50 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
             />
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" />
+            
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-neutral-500">
+              <button
+                type="button"
+                title="Voice Search"
+                onClick={() => {
+                  setVoiceSearchMode('voice');
+                  setIsVoiceSearchOpen(true);
+                }}
+                className="hover:text-purple-400 transition-colors p-0.5"
+              >
+                <Mic size={14} />
+              </button>
+              <button
+                type="button"
+                title="AI Visual Search"
+                onClick={() => {
+                  setVoiceSearchMode('image');
+                  setIsVoiceSearchOpen(true);
+                }}
+                className="hover:text-purple-400 transition-colors p-0.5"
+              >
+                <Camera size={14} />
+              </button>
+            </div>
           </form>
 
           {/* Search Dropdown Results */}
@@ -517,6 +551,13 @@ export const Header = () => {
           </div>
         </div>
       )}
+
+      {/* Voice & AI Visual Search Modal */}
+      <VoiceImageSearchModal
+        isOpen={isVoiceSearchOpen}
+        onClose={() => setIsVoiceSearchOpen(false)}
+        initialMode={voiceSearchMode}
+      />
     </header>
   );
 };

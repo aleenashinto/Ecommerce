@@ -7,6 +7,10 @@ import { useToastStore } from '../store/useToastStore';
 import { Badge } from '../components/ui/Badge';
 import { StarRating } from '../components/ui/StarRating';
 import { ProductCard } from '../components/products/ProductCard';
+import { FrequentlyBoughtTogether } from '../components/products/FrequentlyBoughtTogether';
+import { Product360View } from '../components/products/Product360View';
+import { SizeGuideModal } from '../components/products/SizeGuideModal';
+import { ProductQA } from '../components/products/ProductQA';
 import { 
   Heart, 
   ShoppingBag, 
@@ -22,6 +26,10 @@ import {
   Play,
   ThumbsUp,
   MessageSquarePlus,
+  RotateCw,
+  Ruler,
+  HelpCircle,
+  CreditCard,
   X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -39,7 +47,11 @@ export const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('Standard / M');
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('specs'); // 'specs' | 'video' | 'shipping' | 'reviews'
+  const [activeTab, setActiveTab] = useState('specs'); // 'specs' | 'video' | 'qa' | 'shipping' | 'reviews'
+
+  // 360 View & Size Guide Modals
+  const [show360Modal, setShow360Modal] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   // Pincode estimator
   const [pincode, setPincode] = useState('94107');
@@ -126,6 +138,15 @@ export const ProductDetails = () => {
                   <Badge variant={product.badge.toLowerCase()} />
                 </div>
               )}
+
+              {/* 360 Studio View Button */}
+              <button
+                onClick={() => setShow360Modal(true)}
+                className="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-neutral-900/80 hover:bg-purple-900/80 border border-purple-500/30 text-white text-xs font-semibold backdrop-blur-md flex items-center gap-1.5 transition-all shadow-lg"
+              >
+                <RotateCw size={13} className="text-purple-400" />
+                <span>360° Interactive View</span>
+              </button>
             </div>
 
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
@@ -157,31 +178,47 @@ export const ProductDetails = () => {
                   SKU: AUR-{product.id}-X26
                 </span>
                 <span className="text-xs font-semibold text-emerald-400">
-                  ? In Stock ({product.stockCount || 25} available)
+                  ● In Stock ({product.stockCount || 25} available)
                 </span>
               </div>
             </div>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-3 pb-6 border-b border-neutral-800">
-              <span className="font-mono text-3xl font-bold text-white">${product.price}</span>
-              {product.originalPrice && (
-                <span className="font-mono text-base text-neutral-500 line-through">${product.originalPrice}</span>
-              )}
-              {product.originalPrice && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/20 text-pink-300">
-                  Save ${product.originalPrice - product.price}
-                </span>
-              )}
+            {/* Price & BNPL */}
+            <div className="space-y-2 pb-6 border-b border-neutral-800">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-3xl font-bold text-white">${product.price}</span>
+                {product.originalPrice && (
+                  <span className="font-mono text-base text-neutral-500 line-through">${product.originalPrice}</span>
+                )}
+                {product.originalPrice && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/20 text-pink-300">
+                    Save ${product.originalPrice - product.price}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-purple-300 bg-purple-950/30 border border-purple-800/40 p-2.5 rounded-xl">
+                <CreditCard size={14} className="text-purple-400 shrink-0" />
+                <span>Or <strong>${Math.round(product.price / 4)}/mo</strong> in 4 interest-free payments via <strong>Klarna / Afterpay</strong></span>
+              </div>
             </div>
 
             <p className="text-xs text-neutral-300 leading-relaxed">{product.description}</p>
 
-            {/* Size Selector */}
+            {/* Size Selector & Size Guide */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-neutral-300 uppercase tracking-wider block">
-                Select Configuration / Size: <strong className="text-white">{selectedSize}</strong>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-neutral-300 uppercase tracking-wider block">
+                  Select Configuration / Size: <strong className="text-white">{selectedSize}</strong>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowSizeGuide(true)}
+                  className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 font-semibold"
+                >
+                  <Ruler size={13} /> Size & Fit Guide
+                </button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {sizes.map(s => (
                   <button
@@ -267,20 +304,24 @@ export const ProductDetails = () => {
 
         </div>
 
-        {/* Tabbed Specifications, Video, Shipping, Reviews */}
+        {/* Frequently Bought Together AI Bundle */}
+        <FrequentlyBoughtTogether mainProduct={product} bundleProducts={relatedProducts} />
+
+        {/* Tabbed Specifications, Video, Q&A, Shipping, Reviews */}
         <div className="p-6 sm:p-10 rounded-[32px] bg-neutral-900/60 border border-neutral-800 mb-16">
           <div className="flex items-center gap-6 border-b border-neutral-800 pb-4 mb-8 overflow-x-auto">
             {[
               { id: 'specs', label: 'Technical Specifications' },
               { id: 'video', label: '4K Video Showcase' },
+              { id: 'qa', label: 'Community Q&A' },
               { id: 'shipping', label: 'Shipping & White-Glove Care' },
               { id: 'reviews', label: `Client Reviews (${product.reviewsCount})` }
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`font-heading text-xs sm:text-sm font-bold uppercase tracking-wider pb-2 relative transition-colors ${
-                  activeTab === tab.id ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+                className={`font-heading text-xs sm:text-sm font-bold uppercase tracking-wider pb-2 relative transition-colors shrink-0 ${
+                  activeTab === tab.id ? 'text-white border-b-2 border-purple-500' : 'text-neutral-500 hover:text-neutral-300'
                 }`}
               >
                 {tab.label}
@@ -311,15 +352,33 @@ export const ProductDetails = () => {
             </div>
           )}
 
+          {activeTab === 'qa' && (
+            <div className="max-w-3xl">
+              <ProductQA />
+            </div>
+          )}
+
           {activeTab === 'shipping' && (
             <div className="space-y-4 max-w-2xl text-xs text-neutral-300 leading-relaxed">
-              <p>� <strong>Express Worldwide Courier:</strong> Dispatched from SF and London hubs within 24 hours.</p>
-              <p>� <strong>Aura Care 30-Day Guarantee:</strong> Complimentary return pickup with full instant refund.</p>
+              <p>● <strong>Express Worldwide Courier:</strong> Dispatched from SF and London hubs within 24 hours.</p>
+              <p>● <strong>Aura Care 30-Day Guarantee:</strong> Complimentary return pickup with full instant refund.</p>
             </div>
           )}
 
           {activeTab === 'reviews' && (
             <div className="space-y-8 max-w-3xl">
+              
+              {/* AI Review Summary Consensus Card */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-purple-950/60 to-indigo-950/60 border border-purple-500/30 space-y-2 text-xs">
+                <div className="flex items-center gap-1.5 text-purple-300 font-bold">
+                  <Sparkles size={14} className="text-purple-400" />
+                  <span>🤖 AI Review Consensus & Sentiment Analysis</span>
+                </div>
+                <p className="text-neutral-300 leading-relaxed text-[11px]">
+                  <strong>98% Positive Sentiment:</strong> Clients consistently praise the acoustic soundstage depth, titanium chassis featherlight build, and seamless Bluetooth multipoint connectivity.
+                </p>
+              </div>
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-3xl bg-neutral-950 border border-neutral-800 gap-4">
                 <div className="flex items-center gap-4">
                   <div className="text-4xl font-bold font-heading text-white">{product.rating}</div>
@@ -376,6 +435,12 @@ export const ProductDetails = () => {
         )}
 
       </div>
+
+      {/* 360 Studio View Modal */}
+      <Product360View product={product} isOpen={show360Modal} onClose={() => setShow360Modal(false)} />
+
+      {/* Size & Fit Guide Modal */}
+      <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
 
       {/* Review Submission Modal */}
       {showReviewModal && (

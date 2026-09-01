@@ -34,7 +34,8 @@ export const AdminLayout = () => {
     { name: 'Warehouses & Stock', path: '/admin/inventory', icon: Warehouse },
     { name: 'Customer CRM', path: '/admin/customers', icon: Users },
     { name: 'Coupons & Promos', path: '/admin/coupons', icon: TicketPercent },
-    { name: 'Business Analytics', path: '/admin/analytics', icon: TrendingUp }
+    { name: 'Business Analytics', path: '/admin/analytics', icon: TrendingUp },
+    { name: 'Audit & Security', path: '/admin/audit-logs', icon: ShieldCheck }
   ];
 
   const roles = [
